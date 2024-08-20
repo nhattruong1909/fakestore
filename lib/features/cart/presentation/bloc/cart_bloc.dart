@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -44,8 +45,15 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       GetProductsCartEvent event, Emitter<CartState> emit) async {
     emit(const CartLoadingState());
     var result = await getProductsByIds(event.products);
-    result.fold((l) => emit(ProductLoadingFailedState(message: l.message)),
-        (r) => emit(ProductLoadedState(products: r)));
+    result.fold(
+        (l) => emit(ProductLoadingFailedState(message: l.message)),
+        (r) => emit(ProductLoadedState(
+            products: r,
+            sum: r!.fold<double>(
+                0,
+                (p, c) =>
+                    p + c.quantity!.toDouble() * c.products!.price!.toDouble()),
+            quantity: r!.fold(0, (p, c) => p + c.quantity!))));
   }
 
   FutureOr<void> _onAddCart(AddCartEvent event, Emitter<CartState> emit) async {

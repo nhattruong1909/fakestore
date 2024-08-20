@@ -27,27 +27,33 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    int totalPrice = 0;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          title: const Text(
-            'Your Cart',
-            style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black),
-          ),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Modular.to.navigate('/');
-                },
-                icon: Icon(Icons.home))
-          ]),
-      bottomNavigationBar: CartBottomAppbar(totalPrice: totalPrice),
-      body: BlocProvider.value(
-        value: cartBloc,
-        child: BlocBuilder<CartBloc, CartState>(
+    return BlocProvider.value(
+      value: cartBloc,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            title: const Text(
+              'Your Cart',
+              style:
+                  TextStyle(fontWeight: FontWeight.w600, color: Colors.black),
+            ),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    Modular.to.navigate('/');
+                  },
+                  icon: Icon(Icons.home))
+            ]),
+        bottomNavigationBar: BlocBuilder<CartBloc, CartState>(
+          builder: (context, state) {
+            return CartBottomAppbar(
+              sumPrice: (state is ProductLoadedState) ? state.sum : 0,
+            );
+          },
+        ),
+        body: BlocBuilder<CartBloc, CartState>(
           builder: (context, state) {
             if (state is ProductLoadedState) {
               if (state.products != null && state.products!.isNotEmpty) {

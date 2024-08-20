@@ -33,9 +33,11 @@ class CartLoadingFailedState extends CartState {
 
 class ProductLoadedState extends CartState {
   final List<ProductDetailsQuantityEntity>? products;
-  const ProductLoadedState({this.products});
+  const ProductLoadedState({this.sum = 0.0, this.products, this.quantity = 0});
+  final int quantity;
+  final double sum;
   @override
-  List<Object?> get props => [products];
+  List<Object?> get props => [products, sum];
 }
 
 class ProductLoadingFailedState extends CartState {

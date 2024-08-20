@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CartBottomAppbar extends StatefulWidget {
-  const CartBottomAppbar({super.key, this.totalPrice});
-  final int? totalPrice;
+  const CartBottomAppbar({super.key, this.sumPrice = 0.0});
+  final double sumPrice;
 
   @override
   State<CartBottomAppbar> createState() => _CartBottomAppbarState();
@@ -22,7 +22,7 @@ class _CartBottomAppbarState extends State<CartBottomAppbar> {
             width: 200,
             child: Center(
               child: Text(
-                '${widget.totalPrice} \$',
+                '${widget.sumPrice} \$',
                 style: TextStyle(fontSize: 25, color: Colors.black),
               ),
             ),
