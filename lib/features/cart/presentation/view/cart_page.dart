@@ -1,4 +1,5 @@
 import 'package:fakestore/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:fakestore/features/cart/presentation/widgets/cart_bottom_appbar.dart';
 import 'package:fakestore/features/cart/presentation/widgets/cart_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +27,7 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
+    int totalPrice = 0;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -42,6 +44,7 @@ class _CartPageState extends State<CartPage> {
                 },
                 icon: Icon(Icons.home))
           ]),
+      bottomNavigationBar: CartBottomAppbar(totalPrice: totalPrice),
       body: BlocProvider.value(
         value: cartBloc,
         child: BlocBuilder<CartBloc, CartState>(
