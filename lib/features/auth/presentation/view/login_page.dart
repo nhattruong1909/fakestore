@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
                 state.path! != '/login') {
               Modular.to.pushNamed(state.path!);
             } else {
-              Modular.to.popAndPushNamed('/home');
+              Modular.to.navigate('/');
             }
           } else if (state is LoginFailedState) {
             ScaffoldMessenger.of(context)

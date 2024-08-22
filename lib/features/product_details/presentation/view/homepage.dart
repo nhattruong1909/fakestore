@@ -1,10 +1,13 @@
 import 'package:fakestore/features/auth/presentation/bloc/login_bloc.dart';
+import 'package:fakestore/features/cart/presentation/bloc/cart_bloc.dart'
+    as cart_bloc;
 import 'package:fakestore/features/product_details/presentation/bloc/product_bloc.dart';
 import 'package:fakestore/features/product_details/presentation/widgets/custom_product_tile.dart';
 import 'package:fakestore/features/product_details/presentation/widgets/custom_radio_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:badges/badges.dart' as badges;
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -31,6 +34,7 @@ class _HomepageState extends State<Homepage> {
   int groupValue = 0;
   ProductBloc blocProduct = Modular.get<ProductBloc>();
   LoginBloc loginBloc = Modular.get<LoginBloc>();
+  cart_bloc.CartBloc cartBloc = Modular.get<cart_bloc.CartBloc>();
   @override
   void initState() {
     super.initState();
@@ -40,6 +44,22 @@ class _HomepageState extends State<Homepage> {
     } else {
       blocProduct
           .add(ProductGetByCategoryEvent(category: categories_api[groupValue]));
+    }
+    if (loginBloc.state is LoginSuccess) {
+      cartBloc.add(cart_bloc.GetCartsEvent(
+          id: (loginBloc.state as LoginSuccess).user!.id));
+      if (cartBloc.state is cart_bloc.CartLoadedState &&
+          (cartBloc.state as cart_bloc.CartLoadedState).carts?[0].products !=
+              null &&
+          (cartBloc.state as cart_bloc.CartLoadedState)
+              .carts![0]
+              .products!
+              .isNotEmpty) {
+        cartBloc.add(cart_bloc.GetProductsCartEvent(
+            products: (cartBloc.state as cart_bloc.CartLoadedState)
+                .carts![0]
+                .products));
+      }
     }
   }
 
@@ -55,11 +75,29 @@ class _HomepageState extends State<Homepage> {
           style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black),
         ),
         actions: [
-          IconButton(
-              onPressed: () {
-                Modular.to.pushNamed('/cart');
-              },
-              icon: Icon(Icons.shopping_cart)),
+          BlocBuilder<cart_bloc.CartBloc, cart_bloc.CartState>(
+            bloc: cartBloc,
+            builder: (context, state) {
+              if(state is cart_bloc.ProductLoadedState && loginBloc.state is LoginSuccess){
+                return badges.Badge(position: badges.BadgePosition.topEnd(top: -5, end: 5),
+                  badgeContent: Text('${state.quantity}',
+                style: TextStyle(color: Colors.white),),
+                badgeStyle: badges.BadgeStyle(badgeColor: const Color.fromARGB(255, 230, 98, 11)),
+                child:IconButton(
+                  onPressed: () {
+                    Modular.to.pushNamed('/cart');
+                  },
+                  icon: Icon(Icons.shopping_cart)) );
+              }
+              else {
+                return IconButton(
+                  onPressed: () {
+                    Modular.to.pushNamed('/cart');
+                  },
+                  icon: Icon(Icons.shopping_cart));
+              }
+            },
+          ),
           BlocBuilder<LoginBloc, LoginState>(
               bloc: loginBloc,
               builder: (context, state) {
