@@ -105,6 +105,9 @@ class _HomepageState extends State<Homepage> {
                     ? IconButton(
                         onPressed: () {
                           loginBloc.add(LogoutEvent());
+                          setState(() {
+                            
+                          });
                         },
                         icon: Icon(Icons.logout))
                     : IconButton(
