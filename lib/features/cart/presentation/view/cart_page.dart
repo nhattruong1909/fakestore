@@ -93,7 +93,7 @@ class _CartPageState extends State<CartPage> {
                     productId: widget.id,
                     date: formattedDate,
                     userId: (loginBloc.state as LoginSuccess).user!.id));
-              }
+              }else{
               if (widget.id != 0) {
                 var now = DateTime.now();
                 var formatter = DateFormat('yyyy-MM-dd');
@@ -105,7 +105,7 @@ class _CartPageState extends State<CartPage> {
               } else {
                 cartBloc.add(
                     GetProductsCartEvent(products: state.carts?[0].products));
-              }
+              }}
               return Container();
             } else if (state is CartLoadingFailedState) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
