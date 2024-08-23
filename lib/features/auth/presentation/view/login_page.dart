@@ -13,16 +13,11 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   LoginBloc blocLogin = Modular.get<LoginBloc>();
-  String? path;
   final _formkey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    blocLogin.add(CheckLoggedInEvent());
-    if (blocLogin.state is NotLoggedInState) {
-      path = (blocLogin.state as NotLoggedInState).path;
-    }
   }
 
   @override
@@ -34,10 +29,13 @@ class _LoginPageState extends State<LoginPage> {
           if (state is LoginSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('${state.user?.username} logged in')));
-            if (state.path != null &&
-                state.path!.isNotEmpty &&
-                state.path! != '/login') {
-              Modular.to.pushNamed(state.path!);
+            final data = Modular.args.data;
+            final path = state.path;
+
+            if (path != null &&
+                path!.isNotEmpty &&
+                path! != '/login') {
+              Modular.to.pushNamed(path,arguments:data);
             } else {
               Modular.to.navigate('/');
             }
@@ -114,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                         blocLogin.add(LoggingInEvent(
                             username: usernameController.text,
                             password: passwordController.text,
-                            path: path));
+                            path: blocLogin.state is NotLoggedInState ?  (blocLogin.state as NotLoggedInState).path : null));
                       }
                     },
                     child: const Text(

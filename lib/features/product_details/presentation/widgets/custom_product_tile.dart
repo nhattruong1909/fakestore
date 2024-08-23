@@ -29,7 +29,7 @@ class CustomProductTile extends StatelessWidget {
                 fontWeight: FontWeight.bold, color: Colors.black),
           ),
           Text(
-            price ?? '',
+            '$price \$',
             style: const TextStyle(
                 fontWeight: FontWeight.bold, color: Colors.orange),
           ),

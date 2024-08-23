@@ -8,9 +8,10 @@ class AuthGuard extends RouteGuard {
   final LoginBloc loginBloc;
   @override
   FutureOr<bool> canActivate(String path, ParallelRoute route) async {
-    loginBloc..add(CheckLoggedInEvent(path: path));
+    loginBloc..add(CheckLoggedInEvent(path: route.uri.path));
     // Modular.setArugment();
     // Modular.args;
+    
     final state = loginBloc.state;
     if (state is LoginSuccess) {
       return true;
