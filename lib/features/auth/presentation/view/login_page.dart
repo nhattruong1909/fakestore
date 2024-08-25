@@ -32,10 +32,8 @@ class _LoginPageState extends State<LoginPage> {
             final data = Modular.args.data;
             final path = state.path;
 
-            if (path != null &&
-                path!.isNotEmpty &&
-                path! != '/login') {
-              Modular.to.pushNamed(path,arguments:data);
+            if (path != null && path.isNotEmpty && path != '/login') {
+              Modular.to.pushNamed(path, arguments: data);
             } else {
               Modular.to.navigate('/');
             }
@@ -112,7 +110,9 @@ class _LoginPageState extends State<LoginPage> {
                         blocLogin.add(LoggingInEvent(
                             username: usernameController.text,
                             password: passwordController.text,
-                            path: blocLogin.state is NotLoggedInState ?  (blocLogin.state as NotLoggedInState).path : null));
+                            path: blocLogin.state is NotLoggedInState
+                                ? (blocLogin.state as NotLoggedInState).path
+                                : null));
                       }
                     },
                     child: const Text(

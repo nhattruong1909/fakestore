@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 
-import '../error_model/error_model.dart';
+// import '../error_model/error_model.dart';
 
 ///
 /// This class extends [Equatable] and implements [Exception].
