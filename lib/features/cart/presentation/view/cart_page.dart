@@ -26,6 +26,12 @@ class _CartPageState extends State<CartPage> {
   }
 
   @override
+  void dispose(){
+    cartBloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: cartBloc,
@@ -54,7 +60,9 @@ class _CartPageState extends State<CartPage> {
           },
         ),
         body: BlocBuilder<CartBloc, CartState>(
+          bloc: cartBloc,
           builder: (context, state) {
+
             if (state is ProductLoadedState) {
               if (state.products != null && state.products!.isNotEmpty) {
                 return ListView.builder(

@@ -71,7 +71,7 @@ class AppModule extends Module {
         () => AddNewCart(cartRepository: i.get<CartRepository>()));
     i.addLazySingleton(
         () => UpdateCart(cartRepository: i.get<CartRepository>()));
-    i.addLazySingleton(() => CartBloc(
+    i.add(() => CartBloc(
         getCartByUserId: i.get<GetCartByUserId>(),
         getProductsByIds: i.get<GetProductsByIds>(),
         addNewCart: i.get<AddNewCart>(),
