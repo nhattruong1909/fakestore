@@ -17,9 +17,7 @@ class _CartBottomAppbarState extends State<CartBottomAppbar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          SizedBox(
-            height: 50,
-            width: 200,
+          Expanded(
             child: Center(
               child: Text(
                 '${widget.sumPrice} \$',
