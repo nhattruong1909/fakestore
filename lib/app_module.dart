@@ -1,3 +1,4 @@
+import 'package:fakestore/core/constants/constant.dart';
 import 'package:fakestore/features/auth/data/datasource/user_datasource.dart';
 import 'package:fakestore/features/auth/data/repositories/user_repository_impl.dart';
 import 'package:fakestore/features/auth/domain/repositories/user_repository.dart';
@@ -7,6 +8,8 @@ import 'package:fakestore/features/auth/domain/usecases/logout.dart';
 import 'package:fakestore/features/auth/presentation/bloc/login_bloc.dart';
 import 'package:fakestore/features/auth/presentation/view/login_page.dart';
 import 'package:fakestore/features/cart/data/datasource/cart_datasource.dart';
+import 'package:fakestore/features/cart/data/datasource/cart_local_datasource.dart';
+import 'package:fakestore/features/cart/data/datasource/local_database.dart';
 import 'package:fakestore/features/cart/data/repositories/cart_repository_impl.dart';
 import 'package:fakestore/features/cart/domain/repositories/cart_repository.dart';
 import 'package:fakestore/features/cart/domain/usecases/add_new_cart.dart';
@@ -25,6 +28,8 @@ import 'package:fakestore/features/product_details/presentation/view/homepage.da
 import 'package:fakestore/features/product_details/presentation/view/product_view.dart';
 import 'package:fakestore/features/utils/auth_guard/auth_guard.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'core/network/dio_client.dart';
 import 'features/product_details/data/datasource/product_datasource.dart';
@@ -61,8 +66,10 @@ class AppModule extends Module {
       ..add(CheckLoggedInEvent()));
     i.addLazySingleton<CartDatasource>(
         () => CartDatasourceImpl(dioClient: i.get<DioClient>()));
+    i.addLazySingleton(()=>LocalDatabase());
+    i.addLazySingleton<CartLocalDatasource>(()=> CartLocalDatasourceImpl(localDatabase: i.get<LocalDatabase>() ));
     i.addLazySingleton<CartRepository>(
-        () => CartRepositoryImpl(cartDatasource: i.get<CartDatasource>()));
+        () => CartRepositoryImpl(cartDatasource: i.get<CartDatasource>(), cartLocalDatasource: i.get<CartLocalDatasource>()));
     i.addLazySingleton(
         () => GetCartByUserId(cartRepository: i.get<CartRepository>()));
     i.addLazySingleton(

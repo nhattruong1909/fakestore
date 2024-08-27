@@ -1,32 +1,33 @@
+import 'package:fakestore/features/cart/data/datasource/local_database.dart';
 import 'package:fakestore/features/cart/data/model/product_details_quantity_model.dart';
-import 'package:fakestore/features/cart/domain/entities/product_details_quantity_entity.dart';
+
 import 'package:hive/hive.dart';
 
 abstract class CartLocalDatasource{
-  Future<void> insertOrUpdateCart(List<ProductDetailsQuantityModel?> list_product);
-  Future<List<ProductDetailsQuantityEntity?>> readLocalCart ();
+  Future<void> insertOrUpdateCart(List<ProductDetailsQuantityModel>? list_product);
+  Future<List<ProductDetailsQuantityModel>?> readLocalCart ();
 }
 
 class CartLocalDatasourceImpl implements CartLocalDatasource{
-  final Box box;
+  final LocalDatabase localDatabase;
 
-  CartLocalDatasourceImpl({required this.box});
+  CartLocalDatasourceImpl({required this.localDatabase});
   
   
   @override
-  Future<void> insertOrUpdateCart(List<ProductDetailsQuantityModel?> list_product) async {
-    box.clear();
-    List<Map<String, dynamic>?> list_product_json = list_product.map((product)=>product?.toJson()).toList();
+  Future<void> insertOrUpdateCart(List<ProductDetailsQuantityModel>? list_product) async {
+    List<Map<String, dynamic>>? list_product_json = list_product?.map((product)=>product.toJson()).toList();
+    if (list_product_json != null){
     for(final product in list_product_json){
-    await box.put(product!["products"]["id"],product);}
-
+    await localDatabase.put(product["products"]["id"],product);}
+    }
   }
   
   @override
-  Future<List<ProductDetailsQuantityEntity?>> readLocalCart() {
-    // TODO: implement readLocalCart
-    throw UnimplementedError();
+  Future<List<ProductDetailsQuantityModel>?> readLocalCart()  async {
+    var list_json_product = await localDatabase.getAllValues();
+    var list_model_products = list_json_product.map((product)=> ProductDetailsQuantityModel.fromJson(product)).toList();
+    return list_model_products as List<ProductDetailsQuantityModel>?;
   }
-
-  
+    
 }
