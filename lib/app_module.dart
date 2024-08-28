@@ -1,4 +1,4 @@
-import 'package:fakestore/core/constants/constant.dart';
+
 import 'package:fakestore/features/auth/data/datasource/user_datasource.dart';
 import 'package:fakestore/features/auth/data/repositories/user_repository_impl.dart';
 import 'package:fakestore/features/auth/domain/repositories/user_repository.dart';
@@ -28,8 +28,6 @@ import 'package:fakestore/features/product_details/presentation/view/homepage.da
 import 'package:fakestore/features/product_details/presentation/view/product_view.dart';
 import 'package:fakestore/features/utils/auth_guard/auth_guard.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'core/network/dio_client.dart';
 import 'features/product_details/data/datasource/product_datasource.dart';
@@ -53,7 +51,7 @@ class AppModule extends Module {
         getAllProduct: i.get<GetAllProduct>(),
         getProductByCategory: i.get<GetProductByCategory>()));
     i.addLazySingleton<UserRepository>(
-        () => UserRepositoryImpl(userDatasource: i.get<UserDatasource>()));
+        () => UserRepositoryImpl(userDatasource: i.get<UserDatasource>(), cartLocalDatasource: i.get<CartLocalDatasource>()));
     i.addLazySingleton<UserDatasource>(
         () => UserDatasourceImpl(dioClient: i.get<DioClient>()));
     i.addLazySingleton(() => Login(userRepository: i.get<UserRepository>()));
