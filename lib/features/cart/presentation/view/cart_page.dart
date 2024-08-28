@@ -80,8 +80,7 @@ class _CartPageState extends State<CartPage> {
                   ),
                 );
               }
-            } else if (state is ProductLoadingFailedState ||
-                state is CartLoadingState) {
+            } else if (state is CartLoadingState) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is CartLoadedState) {
               if (state.carts == null || state.carts!.isEmpty) {
@@ -116,11 +115,14 @@ class _CartPageState extends State<CartPage> {
               }}
               return Container();
             } else if (state is CartLoadingFailedState) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(state.message ?? 'Unexpected Error.')));
+              
+              return const Center(child: Text('No cart or error.'));
+            }  else if (state is ProductLoadingFailedState) {
+              
               return const Center(child: Text('No product or error.'));
-            } else {
-              return const Center(child: Text('No product or error.'));
+            } 
+            else {
+              return const Center(child: Text('Other error.'));
             }
           },
         ),

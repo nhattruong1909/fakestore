@@ -18,6 +18,6 @@ ProductDetailsQuantityModel _$ProductDetailsQuantityModelFromJson(
 Map<String, dynamic> _$ProductDetailsQuantityModelToJson(
         ProductDetailsQuantityModel instance) =>
     <String, dynamic>{
-      'products': instance.products,
+      'products': instance.products?.toJson(),
       'quantity': instance.quantity,
     };

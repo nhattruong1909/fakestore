@@ -112,13 +112,15 @@ class _HomepageState extends State<Homepage> {
                             badgeColor: const Color.fromARGB(255, 230, 98, 11)),
                         child: IconButton(
                             onPressed: () {
-                              Modular.to.pushNamed('/cart');
+                              Modular.to.pushNamed('/cart').then((_)=>setState(() {
+                              }));
                             },
                             icon: Icon(Icons.shopping_cart)));
                   } else {
                     return IconButton(
                         onPressed: () {
-                          Modular.to.pushNamed('/cart');
+                          Modular.to.pushNamed('/cart')..then((_)=>setState(() {
+                              }));;
                         },
                         icon: Icon(Icons.shopping_cart));
                   }
@@ -198,7 +200,8 @@ class _HomepageState extends State<Homepage> {
                             return InkWell(
                               onTap: () {
                                 Modular.to.pushNamed('/product-view',
-                                    arguments: state.listProduct?[index]);
+                                    arguments: state.listProduct?[index]).then((_)=>setState(() {
+                              }));;
                               },
                               child: CustomProductTile(
                                   imgUrl: state.listProduct?[index].image,

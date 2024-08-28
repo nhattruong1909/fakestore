@@ -41,6 +41,7 @@ class CartRepositoryImpl implements CartRepository {
       getProductsByIds(List<ProductQuantityEntity>? products) async {
     try {
       bool isTimeExpired = await _isTimeExpired();
+      // bool isTimeExpired = true;
       final List<ProductModel>?  list_model_products;
       final List<ProductDetailsQuantityModel>?  list_model;
       if(isTimeExpired){
@@ -48,7 +49,7 @@ class CartRepositoryImpl implements CartRepository {
           await cartDatasource.getProductsById(products);
       list_model = list_model_products
           ?.map((model) => ProductDetailsQuantityModel(
-              products: model,
+              products: model,   
               quantity: products
                   ?.firstWhere((element) => element.productId == model.id)
                   .quantity))
@@ -75,6 +76,8 @@ class CartRepositoryImpl implements CartRepository {
       CartRequestModel? cart) async {
     try {
       final cart_model = await cartDatasource.addNewCart(cart);
+      await cartLocalDatasource.clearCart();
+      _clearPreviousTime();
       return right(cart_model?.mapToEntity());
     } on DioException catch (e) {
       return left(NetworkException.fromDioError(e));
@@ -88,6 +91,8 @@ class CartRepositoryImpl implements CartRepository {
       CartRequestModel? cart) async {
     try {
       final cart_model = await cartDatasource.updateCart(cart);
+      await cartLocalDatasource.clearCart();
+      _clearPreviousTime();
       return right(cart_model?.mapToEntity());
     } on DioException catch (e) {
       return left(NetworkException.fromDioError(e));
@@ -113,5 +118,10 @@ class CartRepositoryImpl implements CartRepository {
         return false;
       }
     }
+  }
+
+  Future<void> _clearPreviousTime() async{
+    SharedPreferences preferences=await SharedPreferences.getInstance();
+    await preferences.remove('prevTime');
   }
 }

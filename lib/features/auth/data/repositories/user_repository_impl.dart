@@ -4,14 +4,16 @@ import 'package:fakestore/features/auth/data/datasource/user_datasource.dart';
 import 'package:fakestore/features/auth/data/model/user_model.dart';
 import 'package:fakestore/features/auth/domain/entities/user_entity.dart';
 import 'package:fakestore/features/auth/domain/repositories/user_repository.dart';
+import 'package:fakestore/features/cart/data/datasource/cart_local_datasource.dart';
 import 'package:fpdart/src/either.dart';
 import 'package:jwt_decode_full/jwt_decode_full.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final UserDatasource userDatasource;
+  final CartLocalDatasource cartLocalDatasource;
 
-  UserRepositoryImpl({required this.userDatasource});
+  UserRepositoryImpl({required this.cartLocalDatasource,required this.userDatasource});
 
   @override
   Future<Either<NetworkException, UserEntity?>> login(
@@ -69,6 +71,8 @@ class UserRepositoryImpl implements UserRepository {
       prefs.remove("Token");
       prefs.remove("UserId");
       prefs.remove("Username");
+      await cartLocalDatasource.clearCart();
+      prefs.remove("prevTime");
       return right(true);
     } catch (e) {
       return left(NetworkException(e.toString()));
