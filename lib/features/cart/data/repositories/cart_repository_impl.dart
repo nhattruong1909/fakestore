@@ -24,11 +24,23 @@ class CartRepositoryImpl implements CartRepository {
   Future<Either<NetworkException, List<CartEntity>?>> getCartByUserId(
       int? userId) async {
     try {
+      if(await _isTimeExpiredNoSetTime()){
       final list_model = await cartDatasource.getCartByUserId(userId!);
+      if (list_model!=null && list_model.isNotEmpty){
+        await cartLocalDatasource.insertCartLocal(list_model[0]);
+      } 
       List<CartEntity>? list_entity =
           list_model?.map<CartEntity>((cart) => cart.mapToEntity()).toList() ??
               [];
-      return right(list_entity);
+      return right(list_entity);}
+      else{
+        final model = await cartLocalDatasource.getCart();
+        List<CartEntity>? list_entity = [];
+        if(model != null) {
+          list_entity.add(model.mapToEntity());
+        }
+        return right(list_entity);
+      }
     } on DioException catch (e) {
       return left(NetworkException.fromDioError(e));
     } catch (e) {
@@ -54,7 +66,7 @@ class CartRepositoryImpl implements CartRepository {
                   ?.firstWhere((element) => element.productId == model.id)
                   .quantity))
           .toList();
-      await cartLocalDatasource.insertOrUpdateCart(list_model);
+      await cartLocalDatasource.insertOrUpdateProductsCart(list_model);
       }else{
         list_model = await cartLocalDatasource.readLocalCart();
       }
@@ -76,7 +88,6 @@ class CartRepositoryImpl implements CartRepository {
       CartRequestModel? cart) async {
     try {
       final cart_model = await cartDatasource.addNewCart(cart);
-      await cartLocalDatasource.clearCart();
       _clearPreviousTime();
       return right(cart_model?.mapToEntity());
     } on DioException catch (e) {
@@ -91,7 +102,6 @@ class CartRepositoryImpl implements CartRepository {
       CartRequestModel? cart) async {
     try {
       final cart_model = await cartDatasource.updateCart(cart);
-      await cartLocalDatasource.clearCart();
       _clearPreviousTime();
       return right(cart_model?.mapToEntity());
     } on DioException catch (e) {
@@ -107,6 +117,24 @@ class CartRepositoryImpl implements CartRepository {
     String? prevTime = preferences.getString('prevTime');
     if (prevTime == null || prevTime.isEmpty){
       preferences.setString('prevTime', currentTime.toIso8601String());
+      return true;
+    }
+    else{
+      Duration diff = currentTime.difference(DateTime.parse(prevTime));
+      if (diff.inMinutes > 5){
+        preferences.setString('prevTime', currentTime.toIso8601String());
+        return true;
+      } else{
+        return false;
+      }
+    }
+  }
+
+  Future<bool> _isTimeExpiredNoSetTime() async{
+    DateTime? currentTime = DateTime.now();
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? prevTime = preferences.getString('prevTime');
+    if (prevTime == null || prevTime.isEmpty){
       return true;
     }
     else{

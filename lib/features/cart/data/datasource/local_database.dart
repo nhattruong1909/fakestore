@@ -1,4 +1,5 @@
 
+import 'dart:convert';
 import 'dart:core';
 
 import 'package:hive_flutter/hive_flutter.dart';
@@ -26,6 +27,10 @@ class LocalDatabase {
     await box.add(element);
     }
   }
+  Future<void> put(String key, dynamic value) async{
+    final box = await this.box;
+    await box.put(key,value);
+  }
 
   Future<List<Map<String, dynamic>>> getAllValues() async{
     final box = await this.box;
@@ -37,6 +42,37 @@ class LocalDatabase {
       finalValues.add(mapValue);
     }
     return finalValues; 
+  }
+
+  Future<List<Map<String, dynamic>>> getAllExpectKey(String exceptKey) async{
+    final box = await this.box;
+    final values = box.values.where((value){
+    var currentKey = box.keyAt(box.values.toList().indexOf(value)).toString();
+    return currentKey!=exceptKey;
+    }).toList();
+    List<Map<String, dynamic>> finalValues = [];
+    Map<String, dynamic> mapValue ={};
+    for(Map<dynamic, dynamic>value in values){
+      mapValue = convertMap(value);
+      finalValues.add(mapValue);
+    }
+    return finalValues; 
+  }
+
+  Future<dynamic> getByKey(String key) async{
+    final box = await this.box;
+    final cart= await box.get(key);
+    if(cart is String){
+      return convertMap(jsonDecode(cart));
+    }
+    return convertMap(cart);
+  }
+  
+  Future<void> clearExceptKey(String key) async{
+    final box = await this.box;
+    var keys =  box.keys.toList();
+    keys.remove(key);
+    await box.deleteAll(keys);
   }
 
   Future<void> clear() async{
@@ -52,7 +88,7 @@ class LocalDatabase {
   Map<String, dynamic>  convertMap(Map<dynamic, dynamic> dynamicMap){
     final Map<String, dynamic> stringMap={};
 
-    dynamicMap.forEach((key, value ){
+    dynamicMap.forEach((key, value ){  
       String stringKey = key as String;
       if(value is Map){
         stringMap[stringKey] = convertMap(value);

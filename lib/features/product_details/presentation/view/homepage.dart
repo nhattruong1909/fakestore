@@ -138,8 +138,10 @@ class _HomepageState extends State<Homepage> {
                             icon: Icon(Icons.logout))
                         : IconButton(
                             onPressed: () {
-                              Modular.to.pushNamed('/login');
-                              setState(() {});
+                              Modular.to.pushNamed('/login').then((_)=> setState(() {
+                                
+                              }));
+                
                             },
                             icon: Icon(Icons.login));
                   }),
